@@ -70,13 +70,13 @@ public class TeloRadioService extends Service
 	private static final int INTERNET_DISABLE 	= 0;
 	private static final int INTERNET_WIFI 		= 1;
 	private static final int INTERNET_MOBILE 	= 2;
-	
+
 	private static final int TELORADIO_PREF_ENABLE 			= 1;
 	private static final int TELORADIO_PREF_LTE 			= 2;
 	private static final int TELORADIO_PREF_2G_WIFI 		= 3;
 	private static final int TELORADIO_PREF_2G_SCREENOFF 	= 4;
 	private static final int TELORADIO_PREF_3G_UNLOCK		= 5;
-	
+
     private TeloRadioNetworkReceiver mNetWorkReceiver;
     private TeloRadioLockReceiver mLockReceiver;
     private boolean mLockRunning = false;
@@ -88,11 +88,11 @@ public class TeloRadioService extends Service
     private boolean in2GScreenOff = false;
     private SettingsObserver mSettingsObserver;
     private IPowerManager mPM;
-	
+
 	private final boolean mDebug = true;
 	private int mTeloRadioNetworkMode = 0;
     private long m2GScreenOffTime = 0L;
-	
+
 	/**
      * 	SETTINGS OBSERVER
      * 		* void observe()
@@ -121,7 +121,7 @@ public class TeloRadioService extends Service
 
 	private void UpdatePrefs() {
 		ContentResolver resolver = getContentResolver();
-		
+
 		switch (isConnectedTo(this)) {
 			case INTERNET_WIFI:
 				if (getBooleanPrefs(TELORADIO_PREF_2G_WIFI))
@@ -153,7 +153,7 @@ public class TeloRadioService extends Service
      * 	PREFERENCES FUNCTIONS
      * 		* boolean getBooleanPrefs(int mPref)
      **/	
-	
+
 	public boolean getBooleanPrefs(int mPref) {
 		switch (mPref) {
 			case TELORADIO_PREF_ENABLE:
@@ -183,7 +183,7 @@ public class TeloRadioService extends Service
 		else
 			context.stopService(intent);
 	}	
-	
+
 	/**
      * 	SERVICE FUNCTIONS
      * 		* void onCreate()
@@ -195,18 +195,18 @@ public class TeloRadioService extends Service
         super.onCreate(); 
          
 		if (mDebug) Log.i(TAG, "TeloRadio: SERVICE START");
-		
+
         mPM = IPowerManager.Stub.asInterface(ServiceManager.getService(Context.POWER_SERVICE));
-		
+
 		IntentFilter mConnectivityIntent = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
 		mNetWorkReceiver = new TeloRadioNetworkReceiver();
 		registerReceiver(mNetWorkReceiver, mConnectivityIntent);
-		
+
 		mSettingsObserver = new SettingsObserver(new Handler());
 		mSettingsObserver.observe();
 		UpdatePrefs();
     }    
-	
+
 	@Override
 	public void onDestroy() {
 		if (mDebug) Log.i(TAG, "TeloRadio: SERVICE STOP");
@@ -216,7 +216,7 @@ public class TeloRadioService extends Service
 		unregister2GTimerReceiver();
 		getContentResolver().unregisterContentObserver(mSettingsObserver);
 	}	
-	
+
 	/**
      * 	CLASS HANDLER AND FUNCTIONS
      * 		* void handleGetPreferredNetworkTypeResponse(Message msg)
@@ -283,7 +283,7 @@ public class TeloRadioService extends Service
     private int isConnectedTo(Context context) {
 		ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-		
+
 		if (networkInfo == null) {
 			return INTERNET_DISABLE;
 		} else if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
@@ -302,12 +302,12 @@ public class TeloRadioService extends Service
 	private void changeNetworkMode(int modemNetworkMode, Context context, boolean restriction) {
 		if (restriction && !canChangeNetworkMode(context))
 			return;
-			
+
 		if (getNetworkMode() == modemNetworkMode)
 			return;
-		
+
 		mTeloRadioNetworkMode = modemNetworkMode;
-		
+
 		if (mDebug) Log.i(TAG, "TeloRadio: CHANGE NETWORK MODE - New mode: " + mTeloRadioNetworkMode + ".");
 		getPhone().setPreferredNetworkType(modemNetworkMode, getHandler().obtainMessage(MyHandler.MESSAGE_SET_PREFERRED_NETWORK_TYPE));
     } 
@@ -315,10 +315,10 @@ public class TeloRadioService extends Service
     private boolean canChangeNetworkMode(Context context) {
 		if (getNetworkMode() == Phone.NT_MODE_GSM_ONLY && isConnectedTo(context) == INTERNET_WIFI && getBooleanPrefs(TELORADIO_PREF_2G_WIFI))
 			return false;
-			
+
 		if (in2GScreenOff)
 			return false;
-			
+
 		return true;
 	}
   
@@ -330,11 +330,11 @@ public class TeloRadioService extends Service
      **/
        
 	private class TeloRadio2GTimerReceiver extends BroadcastReceiver {
-		
+
         @Override
         public void onReceive(Context context, Intent intent) {
 			if (mDebug) Log.i(TAG, "TeloRadio: 2GTIMER execute");
-			
+
 			in2GScreenOff = true;
 			changeNetworkMode(Phone.NT_MODE_GSM_ONLY, context, false);
         }
@@ -343,7 +343,7 @@ public class TeloRadioService extends Service
     private void register2GTimerReceiver() {
 		if (m2GTimerRunning)
 			return;
-			
+
 		m2GTimerReceiver = new TeloRadio2GTimerReceiver();
         IntentFilter filter = new IntentFilter(ACTION_TELORADIO_2G);
         registerReceiver(m2GTimerReceiver, filter);
@@ -353,7 +353,7 @@ public class TeloRadioService extends Service
     private void unregister2GTimerReceiver() {
 		if (!m2GTimerRunning)
 			return;
-			
+
 		m2GTimerRunning = false;
         unregisterReceiver(m2GTimerReceiver);
     }
@@ -367,14 +367,14 @@ public class TeloRadioService extends Service
      **/
     
 	public class TeloRadioLockReceiver extends BroadcastReceiver {
-		
+
         @Override
         public void onReceive(Context context, Intent intent) {
 			if (mDebug) Log.i(TAG, "TeloRadio: LOCK RECEIVER execute");
-			
+
 			if (!canChangeNetworkMode(context))
 				return;
-			
+
 			updateTimerTo2G();
         }
     };
@@ -383,7 +383,7 @@ public class TeloRadioService extends Service
 		if (!mCanTimer2G)
 			return;
 		register2GTimerReceiver();
-		
+
 		if (mDebug) Log.i(TAG, "TeloRadio: SCREENOFF: Change to 2G in " + m2GScreenOffTime + " ms");
         AlarmManager am = (AlarmManager)this.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(ACTION_TELORADIO_2G);
@@ -402,7 +402,7 @@ public class TeloRadioService extends Service
     private void registerLockReceiver() {
 		if (mLockRunning)
 			return;
-			
+
 		mLockReceiver = new TeloRadioLockReceiver();
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
         registerReceiver(mLockReceiver, filter);
@@ -412,7 +412,7 @@ public class TeloRadioService extends Service
     private void unregisterLockReceiver() {
 		if (!mLockRunning)
 			return;
-			
+
 		mLockRunning = false;
         unregisterReceiver(mLockReceiver);
     }
@@ -427,17 +427,17 @@ public class TeloRadioService extends Service
      **/
     
 	public class TeloRadioUnLockReceiver extends BroadcastReceiver {
-		
+
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (!isScreenOn())
 				return;
 			if (mDebug) Log.i(TAG, "TeloRadio: UNLOCK RECEIVER execute");
-			
+
 			in2GScreenOff = false;
 			cancelTimerTo2G();
-				
+
 			if (!getBooleanPrefs(TELORADIO_PREF_3G_UNLOCK)) {
 				if (mDebug) Log.i(TAG, "TeloRadio: UNLOCK RECEIVER change 3G/LTE when screen lock");
 				if (getBooleanPrefs(TELORADIO_PREF_LTE))
@@ -457,7 +457,7 @@ public class TeloRadioService extends Service
     private void cancelTimerTo2G() {
 		if (mCanTimer2G)
 			return;
-			
+
         AlarmManager am = (AlarmManager)this.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(ACTION_TELORADIO_2G);
         PendingIntent pi = PendingIntent.getBroadcast(this.getApplicationContext(), 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -472,7 +472,7 @@ public class TeloRadioService extends Service
     private void registerUnLockReceiver() {
 		if (mUnLockRunning)
 			return;
-			
+
 		mUnLockReceiver = new TeloRadioUnLockReceiver();
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_USER_PRESENT);
@@ -483,7 +483,7 @@ public class TeloRadioService extends Service
     private void unregisterUnLockReceiver() {
 		if (!mUnLockRunning)
 			return;
-			
+
 		mUnLockRunning = false;
         unregisterReceiver(mUnLockReceiver);
     }  
@@ -504,7 +504,7 @@ public class TeloRadioService extends Service
      **/
      
 	final IBinder mBinder = new LocalBinder();
-	
+
 	public class LocalBinder extends Binder {
 		TeloRadioService getService() {
 			return TeloRadioService.this;
@@ -515,7 +515,7 @@ public class TeloRadioService extends Service
 	public IBinder onBind(Intent intent) {
 		return mBinder;
 	}	
-			
+
 	private Phone mPhone;
     private MyHandler mHandler;
 
