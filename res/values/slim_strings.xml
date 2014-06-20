@@ -51,7 +51,7 @@
     <string name="vibrate_call_waiting">Vibrate on call waiting</string>
     <string name="vibrate_hangup">Vibrate on hang up</string>
     <string name="vibrate_45">Vibrate every minute</string>
-    <string name="vibrate_45_sum">Vibrates at the 45 second mark of every minute during outgoing calls</string>
+    <string name="vibrate_45_sum">Vibrates at the 45-second mark of every minute during outgoing calls</string>
     <string name="show_ssn_label">Event notification</string>
     <string name="show_ssn_summary">Show a notification for various network events related to call handling</string>
 
@@ -77,7 +77,7 @@
     <string name="bg_incall_summary">Keep incoming call UI in background when screen is on, show notification and play ringtone only</string>
 
     <!-- Incall Glowpad transparency -->
-    <string name="glow_bg_trans">Incoming call</string>
+    <string name="glow_bg_trans">Glowpad transparency</string>
     <string name="glow_bg_trans_summary">Make glowpad background transparent during incoming call so entire contact picture is visible</string>
 
     <!-- Sprint MWI Quirk: Phantom message wait indicator workaround -->
@@ -87,6 +87,23 @@
     <!-- Permission for notification-bar network toggle -->
     <string name="perm_change_mobile_network">change network mode (2G/3G)</string>
     <string name="perm_change_mobile_network_desc">Allows the app to change between 2G data and 3G data at any time. 3G is faster, but consumes more battery and may cause additional cost.</string>
+
+    <!-- Setting title for dialpad key padding. -->
+    <string name="dialkey_padding_title">Dialpad key padding</string>
+
+    <!-- Dialog title of the dialpad key padding setting. -->
+    <string name="dialkey_padding_dialog_title">Padding for dialpad keys</string>
+
+    <!-- Setting summary for the dialpad key padding setting. -->
+    <string name="dialkey_padding_summary">Amount of padding on top and bottom of dialpad number keys</string>
+
+    <!-- Values for dialpad key padding array entries. -->
+    <string name="entry_0dip">0dip</string>
+    <string name="entry_5dip">5dip</string>
+    <string name="entry_10dip">10dip</string>
+    <string name="entry_15dip">15dip</string>
+    <string name="entry_20dip">20dip</string>
+    <string name="entry_25dip">25dip</string>
 
     <!-- Setting title for the flip action setting. -->
     <string name="flip_action_title">Flip action</string>
