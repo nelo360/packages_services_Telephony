@@ -445,11 +445,14 @@ public class TeloRadioService extends Service
 				else
 					changeNetworkMode(Phone.NT_MODE_GSM_UMTS, context, true);
 			} else if (action.equals(Intent.ACTION_USER_PRESENT)) {
-					if (mDebug) Log.i(TAG, "TeloRadio: UNLOCK RECEIVER change 3G/LTE when screen unlock");
-					if (getBooleanPrefs(TELORADIO_PREF_LTE))
-						changeNetworkMode(Phone.NT_MODE_LTE_GSM_WCDMA, context, true);
-					else
-						changeNetworkMode(Phone.NT_MODE_GSM_UMTS, context, true);					
+					if(!((isConnectedTo(context) == INTERNET_WIFI) && getBooleanPrefs(TELORADIO_PREF_2G_WIFI)))
+					{
+						if (mDebug) Log.i(TAG, "TeloRadio: UNLOCK RECEIVER change 3G/LTE when screen unlock");
+						if (getBooleanPrefs(TELORADIO_PREF_LTE))
+							changeNetworkMode(Phone.NT_MODE_LTE_GSM_WCDMA, context, true);
+						else
+							changeNetworkMode(Phone.NT_MODE_GSM_UMTS, context, true);
+					}					
 			}
         }
     };
